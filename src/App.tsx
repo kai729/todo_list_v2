@@ -1,5 +1,5 @@
-import localforage from "localforage"; // localforage をインポート
-import { useState, useEffect } from "react"; // React から useState フックをインポート
+import localforage from "localforage";
+import { useState, useEffect } from "react";
 
 import { isTodos } from "./lib/isTodos";
 
@@ -26,11 +26,7 @@ export const App = () => {
     setText("");
   };
 
-  const handleTodo = <K extends keyof Todo, V extends Todo[K]>(
-    id: number,
-    key: K,
-    value: V,
-  ) => {
+  const handleTodo = <K extends keyof Todo, V extends Todo[K]>(id: number, key: K, value: V) => {
     setTodos((todos) => {
       const newTodos = todos.map((todo) => {
         if (todo.id === id) {
@@ -68,9 +64,7 @@ export const App = () => {
   });
 
   useEffect(() => {
-    localforage
-      .getItem("todo-20200101")
-      .then((values) => isTodos(values) && setTodos(values));
+    localforage.getItem("todo-20200101").then((values) => isTodos(values) && setTodos(values));
   }, []);
 
   useEffect(() => {
@@ -79,20 +73,14 @@ export const App = () => {
 
   return (
     <div>
-      <select
-        defaultValue="all"
-        onChange={(e) => handleFilter(e.target.value as Filter)}
-      >
+      <select defaultValue="all" onChange={(e) => handleFilter(e.target.value as Filter)}>
         <option value="all">すべてのタスク</option>
         <option value="checked">完了したタスク</option>
         <option value="unchecked">現在のタスク</option>
         <option value="removed">ごみ箱</option>
       </select>
       {filter === "removed" ? (
-        <button
-          onClick={handleEmpty}
-          disabled={todos.filter((todo) => todo.removed).length === 0}
-        >
+        <button onClick={handleEmpty} disabled={todos.filter((todo) => todo.removed).length === 0}>
           ごみ箱を空にする
         </button>
       ) : (
@@ -124,9 +112,7 @@ export const App = () => {
                 value={todo.value}
                 onChange={(e) => handleTodo(todo.id, "value", e.target.value)}
               />
-              <button
-                onClick={() => handleTodo(todo.id, "removed", !todo.removed)}
-              >
+              <button onClick={() => handleTodo(todo.id, "removed", !todo.removed)}>
                 {todo.removed ? "復元" : "削除"}
               </button>
             </li>
