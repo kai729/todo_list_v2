@@ -1,0 +1,11 @@
+.todoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.checkedText {
+  text-decoration: line-through;
+  color: gray;
+}

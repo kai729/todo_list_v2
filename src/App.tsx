@@ -1,123 +1,96 @@
-import localforage from "localforage";
-import { useState, useEffect } from "react";
-
-import { isTodos } from "./lib/isTodos";
+import { useState } from "react";
+import { useTodoContext } from "./TodoContext";
+import { usePersistedTodos } from "./usePersistedTodos";
+import { useFilteredTodos } from "./useFilteredTodos";
+import { TodoItem } from "./components/TodoItem";
+import styles from "./App.module.css";
+import { State, Action } from "./types";
 
 export const App = () => {
   const [text, setText] = useState("");
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [dueDate, setDueDate] = useState("");
+  const { state, dispatch }: { state: State; dispatch: React.Dispatch<Action> } = useTodoContext();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-  };
+  usePersistedTodos(state.todos, dispatch);
+  const filteredTodos = useFilteredTodos(state.todos, state.filter, state.sortBy);
 
   const handleSubmit = () => {
-    if (!text) return;
-
-    const newTodo: Todo = {
-      value: text,
-      id: new Date().getTime(),
-      checked: false,
-      removed: false,
-    };
-
-    setTodos((todos) => [newTodo, ...todos]);
-    setText("");
-  };
-
-  const handleTodo = <K extends keyof Todo, V extends Todo[K]>(id: number, key: K, value: V) => {
-    setTodos((todos) => {
-      const newTodos = todos.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, [key]: value };
-        } else {
-          return todo;
-        }
-      });
-
-      return newTodos;
+    if (!text.trim()) return;
+    dispatch({
+      type: "ADD_TODO",
+      payload: {
+        value: text,
+        dueDate: dueDate || null,
+      },
     });
+    setText("");
+    setDueDate("");
   };
-
-  const handleFilter = (filter: Filter) => {
-    setFilter(filter);
-  };
-
-  const handleEmpty = () => {
-    setTodos((todos) => todos.filter((todo) => !todo.removed));
-  };
-
-  const filteredTodos = todos.filter((todo) => {
-    switch (filter) {
-      case "all":
-        return !todo.removed;
-      case "checked":
-        return todo.checked && !todo.removed;
-      case "unchecked":
-        return !todo.checked && !todo.removed;
-      case "removed":
-        return todo.removed;
-      default:
-        return todo;
-    }
-  });
-
-  useEffect(() => {
-    localforage.getItem("todo-20200101").then((values) => isTodos(values) && setTodos(values));
-  }, []);
-
-  useEffect(() => {
-    localforage.setItem("todo-20200101", todos);
-  }, [todos]);
 
   return (
-    <div>
-      <select defaultValue="all" onChange={(e) => handleFilter(e.target.value as Filter)}>
-        <option value="all">すべてのタスク</option>
-        <option value="checked">完了したタスク</option>
-        <option value="unchecked">現在のタスク</option>
-        <option value="removed">ごみ箱</option>
-      </select>
-      {filter === "removed" ? (
-        <button onClick={handleEmpty} disabled={todos.filter((todo) => todo.removed).length === 0}>
+    <div className={styles.wrapper}>
+      <div className={styles.controls}>
+        <select
+          className={styles.select}
+          defaultValue="all"
+          onChange={(e) => dispatch({ type: "SET_FILTER", payload: e.target.value })}
+        >
+          <option value="all">すべてのタスク</option>
+          <option value="checked">完了したタスク</option>
+          <option value="unchecked">現在のタスク</option>
+          <option value="removed">ごみ箱</option>
+        </select>
+
+        <select
+          className={styles.select}
+          defaultValue="created"
+          onChange={(e) => dispatch({ type: "SET_SORT", payload: e.target.value })}
+        >
+          <option value="created">作成日順</option>
+          <option value="due">期日が近い順</option>
+        </select>
+      </div>
+
+      {state.filter === "removed" ? (
+        <button
+          onClick={() => dispatch({ type: "EMPTY_REMOVED" })}
+          disabled={state.todos.filter((t) => t.removed).length === 0}
+        >
           ごみ箱を空にする
         </button>
       ) : (
-        filter !== "checked" && (
+        state.filter !== "checked" && (
           <form
+            className={styles.form}
             onSubmit={(e) => {
               e.preventDefault();
               handleSubmit();
             }}
           >
-            <input type="text" value={text} onChange={(e) => handleChange(e)} />
-            <input type="submit" value="追加" onSubmit={handleSubmit} />
+            <input
+              className={styles.input}
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="タスクを入力"
+              required
+            />
+            <input
+              data-testid="due-date"
+              className={styles.dateInput}
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+            <input className={styles.submit} type="submit" value="追加" />
           </form>
         )
       )}
-      <ul>
-        {filteredTodos.map((todo) => {
-          return (
-            <li key={todo.id}>
-              <input
-                type="checkbox"
-                disabled={todo.removed}
-                checked={todo.checked}
-                onChange={() => handleTodo(todo.id, "checked", !todo.checked)}
-              />
-              <input
-                type="text"
-                disabled={todo.checked || todo.removed}
-                value={todo.value}
-                onChange={(e) => handleTodo(todo.id, "value", e.target.value)}
-              />
-              <button onClick={() => handleTodo(todo.id, "removed", !todo.removed)}>
-                {todo.removed ? "復元" : "削除"}
-              </button>
-            </li>
-          );
-        })}
+
+      <ul className={styles.todoList}>
+        {filteredTodos.map((todo) => (
+          <TodoItem key={todo.id} todo={todo} dispatch={dispatch} />
+        ))}
       </ul>
     </div>
   );
