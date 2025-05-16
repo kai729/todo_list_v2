@@ -17,7 +17,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "vitest"]
   },
   "include": ["src", "src/setupTests.ts"],
   "exclude": ["node_modules", "dist"]

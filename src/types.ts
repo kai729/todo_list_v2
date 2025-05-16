@@ -78,6 +78,7 @@ export type Todo = {
 
 export type FilterType = "all" | "checked" | "unchecked" | "removed";
 export type SortBy = "created" | "due";
+export type Filter = "all" | "checked" | "unchecked" | "removed"; // or remove the import
 
 export type State = {
   todos: Todo[];

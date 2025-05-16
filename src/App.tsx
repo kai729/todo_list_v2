@@ -33,7 +33,8 @@ export const App = () => {
         <select
           className={styles.select}
           defaultValue="all"
-          onChange={(e) => dispatch({ type: "SET_FILTER", payload: e.target.value })}
+          // onChange={(e) => dispatch({ type: "SET_FILTER", payload: e.target.value })}
+          onChange={(e) => dispatch({ type: "SET_FILTER", payload: e.target.value as FilterType })}
         >
           <option value="all">すべてのタスク</option>
           <option value="checked">完了したタスク</option>
@@ -44,7 +45,8 @@ export const App = () => {
         <select
           className={styles.select}
           defaultValue="created"
-          onChange={(e) => dispatch({ type: "SET_SORT", payload: e.target.value })}
+          // onChange={(e) => dispatch({ type: "SET_SORT", payload: e.target.value })}
+          onChange={(e) => dispatch({ type: "SET_SORT", payload: e.target.value as SortBy })}
         >
           <option value="created">作成日順</option>
           <option value="due">期日が近い順</option>
