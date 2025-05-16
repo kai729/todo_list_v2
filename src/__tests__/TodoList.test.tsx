@@ -33,13 +33,13 @@ import { vi } from "vitest"; // ★追加
 
 const todos: Todo[] = [
   {
-    id: 1,
+    id: "1",
     value: "テスト",
     dueDate: null,
     checked: false,
     removed: false,
     isEditing: false,
-    createdAt: Date.now(), // ★必須プロパティ追加
+    createdAt: Date.now(),
   },
 ];
 
@@ -48,7 +48,7 @@ test("タスクがあるとき TodoItem が表示される", () => {
     <TodoList
       todos={todos}
       dispatch={vi.fn()}
-      filter="all" // ★Propsで必要なら追加
+      filter="ALL" // ★Propsで必要なら追加
       sortBy="created" // 必要に応じて追加
     />
   );
