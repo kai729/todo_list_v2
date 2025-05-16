@@ -5,6 +5,7 @@ import { useFilteredTodos } from "./useFilteredTodos";
 import { TodoItem } from "./components/TodoItem";
 import styles from "./App.module.css";
 import { State, Action } from "./types";
+import type { FilterType, SortBy } from "./types";
 
 export const App = () => {
   const [text, setText] = useState("");
