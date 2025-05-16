@@ -17,14 +17,6 @@ export const TodoList = ({ todos, filter, dispatch }: Props) => {
       return false;
     });
   }, [todos, filter]);
-
-  // return (
-  //   <ul>
-  //     {filteredTodos.map((todo) => (
-  //       <TodoItem key={todo.id} todo={todo} dispatch={dispatch} />
-  //     ))}
-  //   </ul>
-  // );
   return filteredTodos.length === 0 ? (
     <p>タスクがありません</p>
   ) : (
