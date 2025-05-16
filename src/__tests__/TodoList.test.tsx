@@ -27,8 +27,9 @@
 //   });
 // });
 import { render, screen } from "@testing-library/react";
-import { TodoList } from "../components/TodoList"; // コンポーネントのパスに応じて調整
+import { TodoList } from "../components/TodoList";
 import { Todo } from "../types";
+import { vi } from "vitest"; // ★追加
 
 const todos: Todo[] = [
   {
@@ -38,10 +39,18 @@ const todos: Todo[] = [
     checked: false,
     removed: false,
     isEditing: false,
+    createdAt: Date.now(), // ★必須プロパティ追加
   },
 ];
 
 test("タスクがあるとき TodoItem が表示される", () => {
-  render(<TodoList todos={todos} dispatch={vi.fn()} />);
+  render(
+    <TodoList
+      todos={todos}
+      dispatch={vi.fn()}
+      filter="all" // ★Propsで必要なら追加
+      sortBy="created" // 必要に応じて追加
+    />
+  );
   expect(screen.getByText("テスト")).toBeInTheDocument();
 });
