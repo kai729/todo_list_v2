@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TodoItem } from "../components/TodoItem";
 import { Todo } from "../types";
+import { vi } from "vitest";
 
 describe("TodoItem", () => {
   const mockDispatch = vi.fn();
@@ -12,7 +13,7 @@ describe("TodoItem", () => {
     checked: false,
     removed: false,
     isEditing: false,
-    createdAt: Date.now(),
+    createdAt: new Date().toISOString(), // string 型として渡す
     dueDate: "2025-06-01",
   };
 
